@@ -603,6 +603,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "bmo"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "gpui",
+]
+
+[[package]]
 name = "bstr"
 version = "1.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2226,14 +2234,6 @@ dependencies = [
  "gpui_perf",
  "quote",
  "syn 2.0.108",
-]
-
-[[package]]
-name = "gpuitimer"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "gpui",
 ]
 
 [[package]]
