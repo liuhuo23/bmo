@@ -1,5 +1,8 @@
+use std::path::PathBuf;
+
 use gpui::*;
 mod app;
+mod assets;
 
 fn window_options(cx: &App) -> WindowOptions {
     let bounds = Bounds::centered(None, size(px(480.), px(480.)), cx);
@@ -15,7 +18,9 @@ fn window_options(cx: &App) -> WindowOptions {
 }
 
 fn main() {
-    let app = Application::new();
+    let app = Application::new().with_assets(assets::Assets {
+        base: PathBuf::from("assets"),
+    });
 
     app.run(|cx: &mut App| {
         // bring window to the foreground
