@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use gpui::*;
 mod app;
 mod assets;
+mod utils;
 
 fn window_options(cx: &App) -> WindowOptions {
     let bounds = Bounds::centered(None, size(px(480.), px(480.)), cx);
@@ -34,7 +35,9 @@ fn main() {
         })
         .detach();
 
-        cx.open_window(window_options(cx), |_, cx| cx.new(|_| app::TimerApp::new()))
-            .unwrap();
+        cx.open_window(window_options(cx), |_, cx| {
+            cx.new(|cx| app::TimerApp::new(cx))
+        })
+        .unwrap();
     });
 }
