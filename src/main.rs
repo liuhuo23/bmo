@@ -4,6 +4,7 @@ use gpui::*;
 mod app;
 mod assets;
 mod components;
+mod constants;
 mod session;
 mod utils;
 

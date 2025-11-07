@@ -1,18 +1,39 @@
+use std::time::Duration;
+
+use gpui::SharedString;
+
+use crate::constants::ONE_MIN_MS;
+
 // pomorodo session info
-pub struct PomorodoSession {
-    pub session_count: u8,
-    pub break_duration: u128,
-    pub focus_duration: u128,
+pub struct TimerPreset {
+    pub title: SharedString,
+    pub sessions: Vec<Session>,
 }
 
-impl Default for PomorodoSession {
+impl Default for TimerPreset {
     fn default() -> Self {
         return Self {
-            session_count: 4,
-            // break_duration: 60 * 10, // ten minutes
-            // focus_duration: 60 * 60, // one hour
-            break_duration: 60 * 1 * 1000,
-            focus_duration: 60 * 2 * 1000,
+            title: "Poromodo".into(),
+            sessions: vec![
+                Session::new("Focus".into(), Duration::from_millis(ONE_MIN_MS * 60)),
+                Session::new("Short break".into(), Duration::from_millis(ONE_MIN_MS * 10)),
+                Session::new("Focus".into(), Duration::from_millis(ONE_MIN_MS * 60)),
+                Session::new("Long break".into(), Duration::from_millis(ONE_MIN_MS * 20)),
+                Session::new("Focus".into(), Duration::from_millis(ONE_MIN_MS * 60)),
+                Session::new("Short break".into(), Duration::from_millis(ONE_MIN_MS * 10)),
+                Session::new("Focus".into(), Duration::from_millis(ONE_MIN_MS * 60)),
+            ],
         };
+    }
+}
+
+pub struct Session {
+    pub title: SharedString,
+    pub duration: Duration,
+}
+
+impl Session {
+    pub fn new(title: SharedString, duration: Duration) -> Self {
+        return Session { title, duration };
     }
 }
