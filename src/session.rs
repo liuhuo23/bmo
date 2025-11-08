@@ -5,6 +5,7 @@ use gpui::SharedString;
 use crate::constants::ONE_MIN_MS;
 
 // pomorodo session info
+#[derive(Debug, Clone)]
 pub struct TimerPreset {
     pub title: SharedString,
     pub sessions: Vec<Session>,
@@ -67,11 +68,13 @@ impl Default for TimerPreset {
     }
 }
 
+#[derive(Debug, Clone)]
 pub enum SessionKind {
     WORK,
     BREAK,
 }
 
+#[derive(Debug, Clone)]
 pub struct Session {
     pub title: SharedString,
     pub duration: Duration,

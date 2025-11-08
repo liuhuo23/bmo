@@ -53,6 +53,10 @@ impl BmoApp {
     fn button(&mut self, path: &str, cx: &mut Context<Self>) -> Div {
         return div()
             .size_16()
+            .border_1()
+            .border_color(cx.theme().border)
+            .rounded_full()
+            .hover(|el| el.bg(rgb(0x121212)))
             .child(
                 svg()
                     .size_7()
@@ -65,15 +69,42 @@ impl BmoApp {
             .justify_center();
     }
 
+    fn toggle_pause_play(&mut self, cx: &mut Context<Self>) {
+        if self.timer.read(cx).is_paused() {
+            self.timer.update(cx, |e, cx| {
+                e.play(cx);
+            })
+        } else {
+            self.timer.update(cx, |e, cx| {
+                e.pause(cx);
+            })
+        }
+    }
+
     fn running_footer_row(&mut self, cx: &mut Context<Self>) -> Div {
+        let play_pause_icon = if self.timer.read(cx).is_paused() {
+            "icons/play.svg"
+        } else {
+            "icons/pause.svg"
+        };
+
         return div()
             .flex()
             .flex_row()
+            .p_4()
             .gap_2()
             .items_center()
             .justify_around()
-            .child(self.button("icons/pause.svg", cx))
+            // PAUSE / PLAY
+            .child(self.button(play_pause_icon, cx).on_mouse_up(
+                gpui::MouseButton::Left,
+                cx.listener(|entity, _e, _w, cx| {
+                    entity.toggle_pause_play(cx);
+                }),
+            ))
+            // timeline
             .child(self.timeline.clone())
+            // STOP
             .child(self.button("icons/stop.svg", cx).on_mouse_up(
                 gpui::MouseButton::Left,
                 cx.listener(|entity, _e, _w, cx| {
@@ -82,6 +113,19 @@ impl BmoApp {
                     })
                 }),
             ));
+    }
+
+    fn start_timer(&mut self, cx: &mut Context<Self>) {
+        let session = self.session();
+        let preset = &self.preset;
+
+        self.timeline.update(cx, move |entity, _cx| {
+            entity.update_segments(preset);
+        });
+
+        self.timer.update(cx, |entity, cx| {
+            entity.start(session, cx);
+        });
     }
 
     fn idle_footer(&mut self, cx: &mut Context<Self>) -> Div {
@@ -100,10 +144,7 @@ impl BmoApp {
                     .on_mouse_up(
                         gpui::MouseButton::Left,
                         cx.listener(|entity, _event, _win, cx| {
-                            let session = entity.session();
-                            entity.timer.update(cx, |entity, cx| {
-                                entity.start(session, cx);
-                            })
+                            entity.start_timer(cx);
                         }),
                     ),
             )
