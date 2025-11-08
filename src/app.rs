@@ -74,7 +74,14 @@ impl BmoApp {
             .justify_around()
             .child(self.button("icons/pause.svg", cx))
             .child(self.timeline.clone())
-            .child(self.button("icons/stop.svg", cx));
+            .child(self.button("icons/stop.svg", cx).on_mouse_up(
+                gpui::MouseButton::Left,
+                cx.listener(|entity, _e, _w, cx| {
+                    entity.timer.update(cx, |entity, cx| {
+                        entity.stop(cx);
+                    })
+                }),
+            ));
     }
 
     fn idle_footer(&mut self, cx: &mut Context<Self>) -> Div {
