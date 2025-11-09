@@ -1,24 +1,27 @@
 use gpui::prelude::FluentBuilder;
 use gpui::{
-    AppContext, Context, Div, Entity, InteractiveElement, ParentElement, Render, Styled, div, px,
-    rgb, svg, white,
+    AppContext, Context, Div, Entity, EventEmitter, InteractiveElement, ParentElement, Render,
+    Styled, div, px, rgb, svg, white,
 };
-use gpui_component::ActiveTheme as _;
 use gpui_component::TitleBar;
+use gpui_component::button::{Button, ButtonVariants};
+use gpui_component::{ActiveTheme as _, IconName};
 
 use crate::components::timeline::TimeLine;
 use crate::components::timer::{Timer, TimerCompletedEvent, TimerTickEvent};
+use crate::events::navigation::{NavigationEvent, Screen};
 use crate::session::{Session, SessionKind, TimerPreset};
 
-pub struct BmoApp {
+pub struct TimerScreen {
     timer: Entity<Timer>,
     timeline: Entity<TimeLine>,
     session_index: usize,
     preset: TimerPreset,
-    // _subsriptions: Vec<Subscription>,
 }
 
-impl BmoApp {
+impl EventEmitter<NavigationEvent> for TimerScreen {}
+
+impl TimerScreen {
     pub fn new(cx: &mut Context<Self>) -> Self {
         let timer = cx.new(|_| Timer::new());
         let timeline = cx.new(|_| TimeLine::new());
@@ -57,12 +60,11 @@ impl BmoApp {
         })
         .detach();
 
-        return BmoApp {
+        return TimerScreen {
             timer,
             timeline,
             preset: TimerPreset::default(),
             session_index: 0,
-            // _subsriptions: vec![timer_tick_sub, timer_completed_sub],
         };
     }
 
@@ -209,7 +211,7 @@ impl BmoApp {
     }
 }
 
-impl Render for BmoApp {
+impl Render for TimerScreen {
     fn render(
         &mut self,
         _window: &mut gpui::Window,
@@ -220,7 +222,20 @@ impl Render for BmoApp {
             .size_full()
             .flex()
             .flex_col()
-            .child(TitleBar::new().child(div().child(title)))
+            .child(
+                TitleBar::new().child(div().child(title)).child(
+                    div().flex().items_center().gap_2().child(
+                        Button::new("settings")
+                            .icon(IconName::Settings)
+                            .ghost()
+                            .on_click(cx.listener(|_this, _event, _window, cx| {
+                                cx.emit(NavigationEvent {
+                                    screen: Screen::Settings,
+                                });
+                            })),
+                    ),
+                ),
+            )
             .child(self.app_container(cx));
     }
 }

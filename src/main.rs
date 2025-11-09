@@ -1,11 +1,12 @@
+use crate::{app::BmoApp, assets::Assets};
 use gpui::*;
 use gpui_component::{Root, TitleBar};
 
-use crate::{app::BmoApp, assets::Assets};
 mod app;
 mod assets;
 mod components;
 mod constants;
+mod events;
 mod session;
 
 fn window_options(cx: &App) -> WindowOptions {
@@ -13,17 +14,21 @@ fn window_options(cx: &App) -> WindowOptions {
 
     return WindowOptions {
         window_bounds: Some(WindowBounds::Windowed(bounds)),
+        window_min_size: Some(Size {
+            width: px(500.),
+            height: px(450.),
+        }),
         titlebar: Some(TitleBar::title_bar_options()),
         ..Default::default()
     };
 }
 
 fn main() {
-    let app = Application::new().with_assets(Assets);
+    let appl = Application::new().with_assets(Assets);
 
-    app.run(move |cx| {
-        gpui_component::init(cx);
+    appl.run(move |cx| {
         cx.activate(true);
+        gpui_component::init(cx);
 
         // close app when all windows are closed
         cx.on_window_closed(|cx| {
