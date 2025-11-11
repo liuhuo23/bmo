@@ -1,4 +1,4 @@
-use gpui::{AppContext, Context, Entity, ParentElement, Render, Styled, div};
+use gpui::{AppContext, Context, Entity, ParentElement, Render, Styled, Window, div};
 
 use crate::app::timer::TimerScreen;
 use crate::events::navigation::{NavigationEvent, Screen};
@@ -13,9 +13,9 @@ pub struct BmoApp {
 }
 
 impl BmoApp {
-    pub fn new(cx: &mut Context<Self>) -> Self {
+    pub fn new(cx: &mut Context<Self>, window: &mut Window) -> Self {
         let timer_screen = cx.new(|cx| TimerScreen::new(cx));
-        let setting_screen = cx.new(|cx| settings::SettingScreen::new(cx));
+        let setting_screen = cx.new(|cx| settings::SettingScreen::new(cx, window));
 
         // When we click settings on the timer app, show the settings page
         cx.subscribe(

@@ -22,7 +22,10 @@ impl SettingScreen {
         let preset_list = cx.new(|cx| {
             ListState::new(
                 PresetListDelegate {
-                    items: vec![],
+                    items: vec![PresetItem {
+                        label: "Default".into(),
+                        id: "".into(),
+                    }],
                     selected_index: None,
                 },
                 window,
@@ -34,15 +37,17 @@ impl SettingScreen {
     }
 
     fn presets(&self) -> Div {
-        return div().child(
-            div()
-                .flex()
-                .flex_row()
-                .justify_between()
-                .items_center()
-                .child(Label::new("Presets"))
-                .child(Button::new("new-preset-button").icon(IconName::Plus)),
-        );
+        return div()
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .justify_between()
+                    .items_center()
+                    .child(Label::new("Presets"))
+                    .child(Button::new("new-preset-button").icon(IconName::Plus)),
+            )
+            .child(self.preset_list.clone());
     }
 
     fn body(&self) -> Div {

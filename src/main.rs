@@ -41,7 +41,7 @@ fn main() {
         let w_options = window_options(cx);
         cx.spawn(async move |cx| -> anyhow::Result<()> {
             cx.open_window(w_options, |window, cx| {
-                let view = cx.new(|cx| BmoApp::new(cx));
+                let view = cx.new(|cx| BmoApp::new(cx, window));
                 cx.new(|cx| Root::new(view.into(), window, cx))
             })?;
 
