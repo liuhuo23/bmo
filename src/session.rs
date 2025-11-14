@@ -1,18 +1,92 @@
+use std::time::Duration;
+
+use gpui::SharedString;
+
+use crate::constants::ONE_MIN_MS;
+
 // pomorodo session info
-pub struct PomorodoSession {
-    pub session_count: u8,
-    pub break_duration: u128,
-    pub focus_duration: u128,
+#[derive(Debug, Clone)]
+pub struct TimerPreset {
+    pub title: SharedString,
+    pub sessions: Vec<Session>,
 }
 
-impl Default for PomorodoSession {
+impl TimerPreset {
+    #[allow(unused)]
+    pub fn total_duration(&self) -> Duration {
+        return self
+            .sessions
+            .iter()
+            .map(|i| i.duration)
+            .reduce(|acc, e| acc + e)
+            .unwrap_or_else(|| Duration::from_micros(0));
+    }
+}
+
+impl Default for TimerPreset {
     fn default() -> Self {
         return Self {
-            session_count: 4,
-            // break_duration: 60 * 10, // ten minutes
-            // focus_duration: 60 * 60, // one hour
-            break_duration: 60 * 1 * 1000,
-            focus_duration: 60 * 2 * 1000,
+            title: "Poromodo".into(),
+            sessions: vec![
+                Session::new(
+                    "Focus".into(),
+                    Duration::from_millis(ONE_MIN_MS * 60),
+                    SessionKind::WORK,
+                ),
+                Session::new(
+                    "Short break".into(),
+                    Duration::from_millis(ONE_MIN_MS * 10),
+                    SessionKind::BREAK,
+                ),
+                Session::new(
+                    "Focus".into(),
+                    Duration::from_millis(ONE_MIN_MS * 60),
+                    SessionKind::WORK,
+                ),
+                Session::new(
+                    "Long break".into(),
+                    Duration::from_millis(ONE_MIN_MS * 20),
+                    SessionKind::BREAK,
+                ),
+                Session::new(
+                    "Focus".into(),
+                    Duration::from_millis(ONE_MIN_MS * 60),
+                    SessionKind::WORK,
+                ),
+                Session::new(
+                    "Short break".into(),
+                    Duration::from_millis(ONE_MIN_MS * 10),
+                    SessionKind::BREAK,
+                ),
+                Session::new(
+                    "Focus".into(),
+                    Duration::from_millis(ONE_MIN_MS * 60),
+                    SessionKind::WORK,
+                ),
+            ],
+        };
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum SessionKind {
+    WORK,
+    BREAK,
+}
+
+#[derive(Debug, Clone)]
+pub struct Session {
+    pub title: SharedString,
+    pub duration: Duration,
+    pub kind: SessionKind,
+}
+
+impl Session {
+    pub fn new(title: SharedString, duration: Duration, kind: SessionKind) -> Self {
+        return Session {
+            title,
+            duration,
+            kind,
         };
     }
 }

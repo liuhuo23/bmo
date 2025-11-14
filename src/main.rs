@@ -1,33 +1,35 @@
-use std::path::PathBuf;
-
+use crate::{app::BmoApp, assets::Assets};
 use gpui::*;
+use gpui_component::{Root, TitleBar};
+
 mod app;
 mod assets;
 mod components;
+mod constants;
+mod db;
+mod events;
 mod session;
-mod utils;
 
 fn window_options(cx: &App) -> WindowOptions {
-    let bounds = Bounds::centered(None, size(px(480.), px(480.)), cx);
+    let bounds = Bounds::centered(None, size(px(600.), px(450.)), cx);
 
     return WindowOptions {
         window_bounds: Some(WindowBounds::Windowed(bounds)),
-        titlebar: Some(TitlebarOptions {
-            appears_transparent: true,
-            ..Default::default()
+        window_min_size: Some(Size {
+            width: px(500.),
+            height: px(450.),
         }),
+        titlebar: Some(TitleBar::title_bar_options()),
         ..Default::default()
     };
 }
 
 fn main() {
-    let app = Application::new().with_assets(assets::Assets {
-        base: PathBuf::from("assets"),
-    });
+    let appl = Application::new().with_assets(Assets);
 
-    app.run(|cx: &mut App| {
-        // bring window to the foreground
+    appl.run(move |cx| {
         cx.activate(true);
+        gpui_component::init(cx);
 
         // close app when all windows are closed
         cx.on_window_closed(|cx| {
@@ -37,9 +39,15 @@ fn main() {
         })
         .detach();
 
-        cx.open_window(window_options(cx), |_, cx| {
-            cx.new(|cx| app::TimerApp::new(cx))
+        let w_options = window_options(cx);
+        cx.spawn(async move |cx| -> anyhow::Result<()> {
+            cx.open_window(w_options, |window, cx| {
+                let view = cx.new(|cx| BmoApp::new(cx, window));
+                cx.new(|cx| Root::new(view.into(), window, cx))
+            })?;
+
+            return Ok(());
         })
-        .unwrap();
+        .detach();
     });
 }
