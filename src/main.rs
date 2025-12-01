@@ -1,6 +1,6 @@
 use crate::{app::BmoApp, assets::Assets};
 use gpui::*;
-use gpui_component::{Root, TitleBar};
+use gpui_component::{Root, Theme, TitleBar};
 
 mod app;
 mod assets;
@@ -9,6 +9,7 @@ mod constants;
 mod db;
 mod events;
 mod session;
+mod theme;
 
 fn window_options(cx: &App) -> WindowOptions {
     let bounds = Bounds::centered(None, size(px(600.), px(450.)), cx);
@@ -30,7 +31,7 @@ fn main() {
     appl.run(move |cx| {
         cx.activate(true);
         gpui_component::init(cx);
-
+        theme::init(cx);
         // close app when all windows are closed
         cx.on_window_closed(|cx| {
             if cx.windows().len() == 0 {
@@ -43,7 +44,7 @@ fn main() {
         cx.spawn(async move |cx| -> anyhow::Result<()> {
             cx.open_window(w_options, |window, cx| {
                 let view = cx.new(|cx| BmoApp::new(cx, window));
-                cx.new(|cx| Root::new(view.into(), window, cx))
+                cx.new(|cx| Root::new(view, window, cx))
             })?;
 
             return Ok(());

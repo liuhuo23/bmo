@@ -180,7 +180,7 @@ impl TimerScreen {
                     .border_color(cx.theme().border)
                     .rounded_full()
                     .py_4()
-                    .hover(|el| el.bg(rgb(0x121212)))
+                    .hover(|el| el.bg(cx.theme().primary_hover))
                     .on_mouse_up(
                         gpui::MouseButton::Left,
                         cx.listener(|entity, _event, _win, cx| {
